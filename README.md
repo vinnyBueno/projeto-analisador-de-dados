@@ -10,6 +10,7 @@
 |------|--------|
 | [Vinicius Bueno] | [@vinnyBueno] |
 | [Raquel Brito] | [@kel0508] |
+| [Lucas Canto] | [@lucascantoo] |
 
 ## Arquitetura
 ```mermaid

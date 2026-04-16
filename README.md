@@ -9,3 +9,23 @@
 |------|--------|
 | [Vinicius Bueno] | [@vinnyBueno] |
 | [Raquel Brito] | [@kel0508] |
+## Arquitetura
+flowchart TD
+
+A[Usuário] --> B[Frontend]
+B --> C[Backend]
+
+C --> D[Leitura de CSV]
+D --> E[DataFrame]
+
+C --> F[IA]
+F --> G[Geração de Código]
+
+E --> H[Executor de Código]
+G --> H
+
+H --> I[Resultado da Análise]
+
+I --> C
+C --> B
+B --> A

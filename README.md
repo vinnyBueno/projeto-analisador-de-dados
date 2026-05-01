@@ -5,6 +5,9 @@
 **Projeto: Analisador de dados** 
 **Problema que resolve: Ajuda na tomada de decisão** 
 
+## Como Funciona
+O sistema recebe como entrada um arquivo CSV enviado pelo usuário, contendo dados que ele deseja analisar. A partir disso, no processamento, o backend utiliza IA (Google Gemini) para padronizar e organizar os dados, transformando-os em um formato estruturado. Em seguida, o sistema consulta uma API de CEPs (como a ViaCEP) para enriquecer os dados com informações adicionais. Com os dados já tratados e enriquecidos, a IA realiza uma análise completa e gera insights relevantes. Por fim, na saída, o usuário recebe os resultados dessa análise, que podem ser apresentados em forma de texto explicativo, tabelas ou gráficos, facilitando a interpretação dos dados.
+
 ## Integrantes
 | Nome | GitHub |
 |------|--------|
@@ -16,19 +19,17 @@
 ```mermaid
 flowchart LR
 
-A[Usuario] --> B[Frontend]
-B --> C[Backend]
+A[Usuario] -->|Upload CSV| B[Frontend]
+B --> C[Backend API]
 
-C --> D[Leitura de CSV]
-D --> E[DataFrame]
+C --> D[Gemini - Padronizacao de Dados]
+D --> E[DataFrame Padronizado]
 
-C --> F[IA]
-F --> G[Geração de Codigo]
+E --> F[API de CEPs]
+F --> G[Dados Enriquecidos]
 
-E --> H[Executor de Codigo]
-G --> H
-
-H --> I[Resultado da Analise]
+G --> H[Gemini - Geracao de Insights]
+H --> I[Resultados e Graficos]
 
 I --> C
 C --> B

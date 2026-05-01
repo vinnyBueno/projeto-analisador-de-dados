@@ -16,19 +16,17 @@
 ```mermaid
 flowchart LR
 
-A[Usuario] --> B[Frontend]
-B --> C[Backend]
+A[Usuario] -->|Upload CSV| B[Frontend]
+B --> C[Backend API]
 
-C --> D[Leitura de CSV]
-D --> E[DataFrame]
+C --> D[Gemini - Padronizacao de Dados]
+D --> E[DataFrame Padronizado]
 
-C --> F[IA]
-F --> G[Geração de Codigo]
+E --> F[API de CEPs]
+F --> G[Dados Enriquecidos]
 
-E --> H[Executor de Codigo]
-G --> H
-
-H --> I[Resultado da Analise]
+G --> H[Gemini - Geracao de Insights]
+H --> I[Resultados e Graficos]
 
 I --> C
 C --> B

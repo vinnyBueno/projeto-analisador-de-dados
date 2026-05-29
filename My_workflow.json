@@ -1,0 +1,222 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://viacep.com.br/ws/{{ $json.CEP }}/json/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        640,
+        -48
+      ],
+      "id": "9c3b93cd-b491-4f02-9282-de203a34353d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Você é um assistente especializado em análise de endereços no Brasil.\nResponda de forma objetiva utilizando os dados do endereço fornecido.",
+              "role": "model"
+            },
+            {
+              "content": "=Dados do endereço:\nCEP: {{ $json.cep }}\nRua: {{ $json.logradouro }}\nBairro: {{ $json.bairro }}\nCidade: {{ $json.localidade }}\nEstado: {{ $json.uf }}\n\nPergunta do usuário:\n{{ $('On form submission').item.json.Pergunta }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        -48
+      ],
+      "id": "3dd86648-02df-40aa-92c3-7b2f10f43990",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uERs2xDCY3GF6Kb7",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Consulta de CEP",
+        "formDescription": "Digite um CEP para consultar o endereço.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "CEP",
+              "fieldType": "number",
+              "placeholder": "Digite o CEP",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Pergunta",
+              "placeholder": "Pergunta sobre CEP digitado",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        240,
+        -32
+      ],
+      "id": "5597f210-ba83-41bc-8dbb-2ba8f01f29c8",
+      "name": "On form submission",
+      "webhookId": "a154d5da-2006-4fe6-9d49-c29e31727094"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Resultado da Consulta",
+        "completionMessage": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1200,
+        -48
+      ],
+      "id": "cb3c14ad-9237-4d01-b924-ec3b4025f4c5",
+      "name": "Form",
+      "webhookId": "cede4cfa-2816-4804-8881-f12925f545ea"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b9f7dac1-342d-4a16-87c4-78acaaa55936",
+              "leftValue": "={{ $('On form submission').item.json.CEP }}",
+              "rightValue": "^\\d{8}$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        -32
+      ],
+      "id": "f44a3331-21e8-471b-9b50-3a462bd48a01",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "CEP inválido",
+        "completionMessage": "Digite um CEP válido contendo exatamente 8 números.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        640,
+        96
+      ],
+      "id": "f2daed0c-d777-4a5f-b479-00ba9a41431c",
+      "name": "Form1",
+      "webhookId": "2e08bd87-7682-4309-85e5-d6c02e24dc52"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "32466dd1-d0d6-40b2-8e98-5164a170152c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee90a37e6813a0161f7e7eb25aa7fc0f3ec35dcc3c8b378df66e106c8e2485f4"
+  },
+  "id": "92UNwRRSB2jcsoOO",
+  "tags": []
+}
